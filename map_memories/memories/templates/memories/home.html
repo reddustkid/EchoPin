@@ -1,0 +1,88 @@
+{% extends 'memories/base.html' %}
+{% load static %}
+
+{% block title %}Home - EchoPin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="{% static 'memories/css/styles.css' %}">
+<link rel="stylesheet" href="{% static 'memories/css/chart.css' %}">
+<style>
+
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin-bottom: 2rem;
+    }
+    .server-info-card {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    .usage-logs {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .log-entry {
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+    }
+    .log-entry:last-child {
+        border-bottom: none;
+    }
+    .row {
+        display: flex;
+        flex-direction:column;
+        align-items: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4 text-center mb-3">Welcome back  {{ user.username }} to EchoPin</h1>
+            <p class="lead text-center text-muted">Share your Echoes of memories</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+        </form>
+        <a class="row btn btn-primary button-color button-save" href="{% url 'gallery_images' %}">Сохранить воспоминание</a>
+        <div class="container">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Название</th>
+                        <th>Город</th>
+                        <th>Фото</th>
+                        <th style = "width: 70%;">Воспоминание</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for image in gallery_images %}
+                    <tr class="station-row" 
+                        data-location="{{ image.gps_location }}"
+                        data-image="{{ image.gallery_images }}"
+                        onclick="updateMap(this)">
+                        <td>{{ image.name }}</td>
+                        <td>{{ image.city }}</td>
+                        <td><img src="{{ image.gallery_images.url }}" class="img-responsive " style="width: 100%;"></td>
+                        <td>{{ image.memories }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">Пока что пусто</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
